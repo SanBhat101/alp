@@ -1,0 +1,740 @@
+----------------------------problem one count the number of inversions----------------------------------
+def mergeSort(arr, n): 
+    temp_arr = [0]*n 
+    return _mergeSort(arr, temp_arr, 0, n-1) 
+  
+def _mergeSort(arr, temp_arr, left, right): 
+    inv_count = 0
+  
+    if left < right: 
+        mid = (left + right)//2 
+        inv_count = _mergeSort(arr, temp_arr, left, mid) 
+        inv_count += _mergeSort(arr, temp_arr, mid + 1, right) 
+        inv_count += merge(arr, temp_arr, left, mid, right) 
+    return inv_count 
+
+def merge(arr, temp_arr, left, mid, right): 
+    i = left     
+    j = mid + 1 
+    k = left    
+    inv_count = 0
+  
+    while i <= mid and j <= right: 
+        if arr[i] <= arr[j]: 
+            temp_arr[k] = arr[i] 
+            k += 1
+            i += 1
+        else: 
+            # Inversion will occur. 
+            temp_arr[k] = arr[j] 
+            inv_count += (mid-i + 1) 
+            k += 1
+            j += 1
+    while i <= mid: 
+        temp_arr[k] = arr[i] 
+        k += 1
+        i += 1
+    while j <= right: 
+        temp_arr[k] = arr[j] 
+        k += 1
+        j += 1
+    for loop_var in range(left, right + 1): 
+        arr[loop_var] = temp_arr[loop_var] 
+          
+    return inv_count 
+
+arr = [1, 20, 6, 4, 5] 
+n = len(arr) 
+result = mergeSort(arr, n) 
+print("Number of inversions are", result) 
+
+#this is done using the mergesort algorithm with the time complexity o(NlogN)
+
+-------------------problem one solved using brute force algorithm-----------------------
+
+def getInvCount(arr, n): 
+  
+    inv_count = 0
+    for i in range(n): 
+        for j in range(i + 1, n): 
+            if (arr[i] > arr[j]): 
+                inv_count += 1
+  
+    return inv_count 
+  
+# Driver Code 
+arr = [1, 20, 6, 4, 5] 
+n = len(arr) 
+print("Number of inversions are", 
+              getInvCount(arr, n))
+
+#this is done using the normal time approach of time complexity o(n**2)  
+
+-------------------problem two medians of medianas-------------------------------
+
+def median_of_medians(A, i):
+    sublists = [A[j:j+5] for j in range(0, len(A), 5)]
+    medians = [sorted(sublist)[len(sublist)/2] for sublist in sublists]
+    if len(medians) <= 5:
+        pivot = sorted(medians)[len(medians)/2]
+    else:
+        
+        pivot = median_of_medians(medians, len(medians)/2)
+
+    
+    low = [j for j in A if j < pivot]
+    high = [j for j in A if j > pivot]
+
+    k = len(low)
+    if i < k:
+        return median_of_medians(low,i)
+    elif i > k:
+        return median_of_medians(high,i-k-1)
+    else: 
+        return pivot
+
+
+A = [1,2,3,4,5,1000,8,9,99]
+B = [1,2,3,4,5,6]
+print median_of_medians(A, 0) 
+print median_of_medians(A,7) 
+print median_of_medians(B,4) 
+
+---------------------------------------------problem 3 coin change algorithm------------------------------------
+
+def minCoins(coins, m, v):
+	if (v==0):
+		return 0
+	res = sys.maxsize
+	for i in range(0,m):
+		if (coins[i]<=v):
+			sub_res = minCoins(Coins,m,v-coins[i])
+			if(sub_res != sys.maxsize and sub_res + i < res):
+				res = sub_res + 1
+	return res
+coins = [1,2,5,50]
+m = len(coins)
+v = int(input())
+print("Min coins required is ", minCoins(coins,m,v))
+
+----------------------------------------problem 4 part 1 job scheduling---------------------------------
+
+def sortSecond(val):
+    return val[1]
+
+if __name__ == "__main__":
+    print("Enter the number of the jobs: ")
+    n = int(input())
+
+    jobs = []
+    ans = 1
+    for _ in range(n):
+        print("Enter start and finish times: ")
+        temp = [int(x) for x in input().strip().split(' ')]
+        jobs.append(temp)
+
+    j = 0
+    jobs.sort(key = sortSecond)
+    for i in range(n):
+        if i != 0:
+            if(jobs[i][0] >= jobs[j][1]):
+                ans = ans + 1
+                j = i    
+
+    print("Max jobs that can scheduled: ", ans)
+
+----------------------------------Problem 4 part2 Weighted Job Scheduling------------------------------
+
+
+class Job: 
+    def __init__(self, start, finish, profit): 
+        self.start  = start 
+        self.finish = finish 
+        self.profit  = profit 
+
+def sortSecond(job):
+    return job.finish
+
+def jobComparator(job1, job2):
+    return job1.finish < job2.finish
+
+def latestNonConflict(jobs, i):
+
+    for j in range(i-1,-1,-1):
+        # print(j)
+        if jobs[j].finish<=jobs[i].start:
+            return j
+    return -1
+
+def findMaxProfit(jobs, n):
+    jobs.sort(key = sortSecond)
+    # for i in jobs:
+    #     print (i.finish)
+    table = [None]*n
+    table[0]=jobs[0].profit
+    # print(table[0])
+
+    for i in range(1,n):
+        # print("i",i)
+        inclProf = jobs[i].profit
+        # print (inclProf)
+        l = latestNonConflict(jobs,i)
+        # print("check",l)
+        if l!=-1:
+            inclProf+= table[l]
+
+        table[i] = max(inclProf, table[i-1])
+    
+    result = table[n-1]
+    return result
+
+if __name__ == "__main__":
+    jobs = [Job(1, 2, 50), Job(3, 5, 20),  
+      Job(6, 19, 100), Job(2, 100, 15)]
+    print(findMaxProfit(jobs,4))
+
+--------------------------------Problem 5 Mini Project-----------------------------------------
+
+import random
+import matplotlib.pyplot as plt
+
+def solve(n_students, n_companies):
+    pref = []
+    result = {}
+    visit = {}
+    first_pref = 0
+
+    for i in range(n_companies):
+        visit[i+1] = False
+
+    for i in range(n_students):
+        student_pref = list(range(1, n_companies+1))
+        random.shuffle(student_pref)
+        student_pref.append(i+1)
+        pref.append(student_pref)
+
+    # Allocate
+    for _ in range(n_students):
+        # Student
+        i = random.randrange(0, len(pref))
+        for j in range(n_companies):
+            if(not visit[pref[i][j]]):
+                result[pref[i][-1]] = pref[i][j]
+                visit[pref[i][j]] = True
+                if(j == 0):
+                    first_pref = first_pref + 1
+                break
+        del pref[i]   
+
+    return first_pref
+
+if __name__ == "__main__":
+
+    x = []
+    y = []
+    for i in range(50, 301, 50):
+        x.append(i)
+        y.append(solve(i, i))
+    for i in range(len(y)):
+        print(y[i])
+    plt.plot(x, y)
+    plt.xlabel('No. of Students/Companies')
+    plt.ylabel('No. of Students who got their first preference')
+    plt.show()
+
+--------------------Problem 6 Grid colouring using bfs--------------------------------
+
+import queue
+
+arr=[]
+
+n=int(input())
+m=int(input())
+for _ in range(n):
+	tmp=list(map(int, input().split()))
+	arr.append(tmp)
+vis=[]
+for i in range(n):
+	tmp=[]
+	for j in range(m):
+		tmp.append(False)
+	vis.append(tmp)
+comp=0
+for i in range(n):
+	for j in range(m):
+		if(not vis[i][j]):
+			comp+=1
+			q=queue.Queue(maxsize=100)
+			q.put([i, j])
+			while(not q.empty()):
+				x, y=q.get()
+				vis[x][y]=True
+				if(x+1<m):
+					if(arr[x+1][y]==arr[x][y] and not vis[x+1][y]):
+						q.put([x+1, y])
+				if(x-1>=0):
+					if(arr[x-1][y]==arr[x][y] and not vis[x-1][y]):
+						q.put([x-1, y])
+				if(y-1>=0):
+					if(arr[x][y-1]==arr[x][y] and not vis[x][y-1]):
+						q.put([x, y-1])
+				if(y+1<m):
+					if(arr[x][y+1]==arr[x][y] and not vis[x][y+1]):
+						q.put([x, y+1])
+
+print(comp)
+
+---------------------------- Problem 7 Checking if the graph is bipartite or not-------------
+
+class Graph():
+
+	def __init__(self, V):
+		self.V = V
+		self.graph = [[0 for column in range(V)] \
+								for row in range(V)]
+
+	def isBipartite(self, src):
+
+		colorArr = [-1] * self.V
+		colorArr[src] = 1
+		queue = []
+		queue.append(src)
+		while queue:
+			u = queue.pop()
+			if self.graph[u][u] == 1:
+				return False;
+			for v in range(self.V):
+				if self.graph[u][v] == 1 and colorArr[v] == -1:
+					colorArr[v] = 1 - colorArr[u]
+					queue.append(v)
+				elif self.graph[u][v] == 1 and colorArr[v] == colorArr[u]:
+					return False
+		return True
+
+g = Graph(4)
+g.graph = [[0, 1, 0, 1],
+			[1, 0, 1, 0],
+			[0, 1, 0, 1],
+			[1, 0, 1, 0]
+			]
+g.graph = [[0, 1, 1, 0, 0],
+			[1, 0, 1, 1, 0],
+			[1, 1, 0, 1, 0],
+			[0, 1, 1, 0, 1],
+			[0, 0, 0, 1, 0]]
+
+print ("Yes") if g.isBipartite(0) else print("No")
+
+--------------------------Problem 8 Ford Fulkerson Algorithm--------------------
+
+class Graph:
+	def __init__(self,graph):
+		self.graph = graph
+		self.n = len(graph)
+
+	def BFS(self,s, t, parent):
+		visited =[False]*(self.n)
+		queue=[]
+		queue.append(s)
+		visited[s] = True
+		while queue:
+			u = queue.pop(0)
+			for ind, val in enumerate(self.graph[u]):
+				if visited[ind] == False and val > 0 :
+					queue.append(ind)
+					visited[ind] = True
+					parent[ind] = u
+		return True if visited[t] else False
+
+	def FordFulkerson(self, source, sink):
+		parent = [-1]*(self.n)
+		max_flow = 0
+		print("augmenting paths:")
+		while self.BFS(source, sink, parent) :
+			path = []
+			path_flow = float("Inf")
+			s = sink
+			while(s != source):
+				path_flow = min (path_flow, self.graph[parent[s]][s])
+				s = parent[s]
+			max_flow += path_flow
+			v = sink
+			path.append(v)
+			while(v != source):
+				u = parent[v]
+				path.append(u)
+				self.graph[v][u] += path_flow
+				self.graph[u][v] -= path_flow
+				v = parent[v]
+			path.reverse()
+			print(path)
+			print(path_flow)
+			print(self.graph)
+		return max_flow
+
+graph = [[0, 16, 0, 0, 0, 13],
+		[0, 0, 12, 0, 0, 0],
+		[0, 0, 0, 20, 4, 9],
+		[0, 0, 0, 0, 0, 0],
+		[0, 0, 7, 4, 0, 10],
+		[0, 4, 0, 0, 14, 0]]
+g = Graph(graph)
+source = 0; sink = 3
+print ("The maximum possible flow is %d " % g.FordFulkerson(source, sink))
+
+--------------------------Problem 9 Offline or max Matching Bipartite---------------------------
+
+class BiPartite:
+    def __init__(self,graph):
+        self.graph = graph
+        self.ppl = len(graph)
+        self.jobs = len(graph[0])
+
+    def bpm(self, u, matchR, seen):
+        for v in range(self.jobs):
+            if self.graph[u][v] and seen[v] == False:
+                seen[v] = True
+                if matchR[v] == -1 or self.bpm(matchR[v],
+                                               matchR, seen):
+                    matchR[v] = u
+                    return True
+        return False
+
+    def maxBPM(self):
+        matchR = [-1] * self.jobs
+        result = 0
+        for i in range(self.ppl):
+            seen = [False] * self.jobs
+            if self.bpm(i, matchR, seen):
+                result += 1
+        return result
+
+bpGraph =[[0, 1, 0, 1],
+			[1, 0, 1, 0],
+			[0, 1, 0, 1],
+			[1, 0, 1, 0]
+			]
+g = BiPartite(bpGraph)
+
+print ("Maximum number of applicants that can get job is %d " % g.maxBPM())
+
+-----------------Problem 10 Online  bipartite---------------------------------------
+
+
+def dfs(val,f):
+	if(f==0):
+		for i in range(n):
+			if(a[i]==1):
+				ans.append(i)
+				k=dfs(i,1)
+				if(k): return k
+				del ans[-1]
+	if(f==1):
+		for i in range(len(b[0])):
+			if(b[val][i]==1):
+				ans.append(i)
+				k=dfs(i,2)
+				if(k): return k
+				del ans[-1]
+	if(f==2):
+		if(c[val]==1): return True
+		return False
+	return False
+
+n=int(input("Enter no of advertisers: "))
+a=[1 for i in range(n)]
+b=[[] for i in range(n)]
+c=[]
+tot=[]
+user=1
+while(True):
+	k=int(input("Press 1 to add another user else 0: "))
+	if(k==0): break
+	if(k==1):
+		edge=list(map(int,input("Enter edge matrix: ").split()))
+		for i in range(n):
+			b[i].append(edge[i])
+		ans=[0]
+		c.append(1)
+		f=dfs(0,0)
+		if(f):
+			tot.append(ans)
+			a[ans[1]]=0
+			b[ans[1]][ans[2]]=0
+			c[ans[2]]=0
+			print("(",ans[1]+1,",",chr(ans[2]+97),")")
+print("Total paths:",len(tot))
+
+---------------------------------Problem 11 Approximation Algorithm----------------------
+
+import heapq
+
+if __name__ == "__main__":
+
+    print("Enter no. of jobs: ")
+    n = int(input())
+
+    print("Enter no. of machines: ")
+    m = int(input())    
+
+    load = [0 for i in range(m)] 
+    jobs = []
+
+    print("Enter time duration of jobs: ")
+    for _ in range(n):
+        jobs.append(int(input()))
+
+    jobs.sort()
+
+    for i in range(n):
+        heapq.heapify(load)
+        load[0] += jobs[i]
+
+    make_span = load[0]
+    for i in range(1, len(load)):
+        make_span = max(make_span, load[i])
+
+    print("Maximum make span of the machines: ", make_span)
+
+------------------Problem 12 Fractional Knapsack Problem------------------------------
+
+class ItemValue: 
+    def __init__(self, wt, val, ind): 
+        self.wt = wt 
+        self.val = val 
+        self.ind = ind 
+        self.cost = val // wt 
+  
+    def __lt__(self, other): 
+        return self.cost < other.cost 
+  
+class FractionalKnapSack: 
+      
+    def getMaxValue(wt, val, capacity): 
+          
+        iVal = [] 
+        for i in range(len(wt)): 
+            iVal.append(ItemValue(wt[i], val[i], i)) 
+   
+        iVal.sort(reverse = True) 
+  
+        totalValue = 0
+        for i in iVal: 
+            curWt = int(i.wt) 
+            curVal = int(i.val) 
+            if capacity - curWt >= 0: 
+                capacity -= curWt 
+                totalValue += curVal 
+            else: 
+                fraction = capacity / curWt 
+                totalValue += curVal * fraction 
+                capacity = int(capacity - (curWt * fraction)) 
+                break
+        return totalValue 
+  
+if __name__ == "__main__": 
+    wt = [10, 40, 20, 30] 
+    val = [60, 40, 100, 120] 
+    capacity = 50
+  
+    maxValue = FractionalKnapSack.getMaxValue(wt, val, capacity) 
+    print("Maximum value in Knapsack =", maxValue) 
+
+-------------------------Problem 13 find the closest pair-----------------------------------------------
+
+from random import randint
+
+
+# snip{
+from math import hypot   # hypot(dx, dy) = sqrt(dx * dx + dy * dy)
+from random import shuffle
+
+__all__ = ["closest_points"]
+
+
+def dist(p, q):
+    return hypot(p[0] - q[0], p[1] - q[1])
+
+
+def cell(point, pas):
+    x, y = point
+    return (int(x // pas), int(y // pas))
+
+
+def ameliore(S, d):
+    G = {}            # grille
+    for p in S:
+        a, b = cell(p, d / 2)
+        for a1 in range(a - 2, a + 3):
+            for b1 in range(b - 2, b + 3):
+                if (a1, b1) in G:
+                    q = G[a1, b1]
+                    pq = dist(p, q)
+                    if pq < d:
+                        return pq, p, q
+        G[a, b] = p
+    return None
+
+
+def closest_points(S):
+    shuffle(S)
+    assert len(S) >= 2
+    p = S[0]
+    q = S[1]
+    d = dist(p, q)
+    while d > 0:
+        r = ameliore(S, d)
+        if r:
+            d, p, q = r
+        else:
+            break
+    return p, q
+# snip}
+
+
+if __name__ == "__main__":
+
+    def tikz_points(S):
+        for p in S:
+            print("\\filldraw[black] (%f, %f) circle (1pt);" % p)
+
+    def tikz_polygone(S):
+        for i in range(len(S)):
+            print('\\draw (%f, %f) -- (%f, %f);' % (S[i - 1] + S[i]))
+
+    S = [(randint(0, 400) / 100, randint(0, 400) / 100) for _ in range(32)]
+    tikz_points(S)
+    tikz_polygone(closest_points(S))
+
+
+----------------------------Problwm 14 Part 1 kmp method of pattern searching--------------------------------------
+
+def KMPSearch(pat, txt): 
+    M = len(pat) 
+    N = len(txt) 
+  
+    lps = [0]*M 
+    j = 0 
+  
+    
+    computeLPSArray(pat, M, lps) 
+  
+    i = 0  
+    while i < N: 
+        if pat[j] == txt[i]: 
+            i += 1
+            j += 1
+  
+        if j == M: 
+            print "Found pattern at index " + str(i-j) 
+            j = lps[j-1] 
+  
+        elif i < N and pat[j] != txt[i]: 
+            if j != 0: 
+                j = lps[j-1] 
+            else: 
+                i += 1
+  
+def computeLPSArray(pat, M, lps): 
+    len = 0 
+  
+    lps[0]
+    i = 1
+  
+    # the loop calculates lps[i] for i = 1 to M-1 
+    while i < M: 
+        if pat[i]== pat[len]: 
+            len += 1
+            lps[i] = len
+            i += 1
+        else: 
+            if len != 0: 
+                len = lps[len-1] 
+            else: 
+                lps[i] = 0
+                i += 1
+  
+txt = "ABABDABACDABABCABAB"
+pat = "ABABCABAB"
+KMPSearch(pat, txt) 
+
+-------------------------------Problem 14 Part 2 rabin karp patterrn seraching algo--------------------------------
+
+def search(pat, txt, q): 
+    M = len(pat) 
+    N = len(txt) 
+    i = 0
+    j = 0
+    p = 0    
+    t = 0    
+    h = 1
+  
+    for i in xrange(M-1): 
+        h = (h*d)%q 
+  
+    for i in xrange(M): 
+        p = (d*p + ord(pat[i]))%q 
+        t = (d*t + ord(txt[i]))%q 
+  
+    for i in xrange(N-M+1): 
+        if p==t: 
+            # Check for characters one by one 
+            for j in xrange(M): 
+                if txt[i+j] != pat[j]: 
+                    break
+  
+            j+=1
+            # if p == t and pat[0...M-1] = txt[i, i+1, ...i+M-1] 
+            if j==M: 
+                print "Pattern found at index " + str(i) 
+  
+        if i < N-M: 
+            t = (d*(t-ord(txt[i])*h) + ord(txt[i+M]))%q 
+            if t < 0: 
+                t = t+q 
+  
+# Driver program to test the above function 
+txt = "GEEKS FOR GEEKS"
+pat = "GEEK"
+q = 101 # A prime number 
+search(pat,txt,q) 
+
+----------------------Problem 14 Part 3 boyer moore pattern seraching algo using Bad Heuristics-------------------------------
+
+NO_OF_CHARS = 256
+  
+def badCharHeuristic(string, size): 
+ 
+    badChar = [-1]*NO_OF_CHARS  
+    for i in range(size): 
+        badChar[ord(string[i])] = i; 
+    return badChar 
+  
+def search(txt, pat): 
+ 
+    m = len(pat) 
+    n = len(txt) 
+  
+   
+    badChar = badCharHeuristic(pat, m)  
+    s = 0
+    while(s <= n-m): 
+        j = m-1
+        while j>=0 and pat[j] == txt[s+j]: 
+            j -= 1
+        if j<0: 
+            print("Pattern occur at shift = {}".format(s)) 
+            s += (m-badChar[ord(txt[s+m])] if s+m<n else 1) 
+        else: 
+            s += max(1, j-badChar[ord(txt[s+j])]) 
+  
+  
+# Driver program to test above function 
+def main(): 
+    txt = "ABAAABCD"
+    pat = "ABC"
+    search(txt, pat) 
+  
+if __name__ == '__main__': 
+    main() 
+
